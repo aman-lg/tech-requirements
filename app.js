@@ -3,7 +3,7 @@
 // ============================================
 
 // CONFIGURATION - YOUR URL IS ALREADY HERE
-const SCRIPT_URL = 'https://script.googleusercontent.com/macros/echo?user_content_key=AehSKLhMKE6AXy4qM-PaLjfj9jXK-1c58hruHJR6QYFMERaSFVIrMi9JDAwwyfZYzlRD27OXt1FecZoO1JJkMADs0tS59SwL3QcvTOWDLCiOt93sA_PpHkQFbE26oJpsB0cMZBaTEuDoZ7zLp6IaF-wIVB20PaY-sb3dc3SxKwhv4_zhZwPdKA59tZU2Plfa4W2cYB5MzC_n9OYem2IZDlFxjo6BZN5BPJjciDfUzcpyL2fSF6QuxU_OgyPYASaJUWOiv-DrIuhySy84CXUKo3KWUJCgaRDLNQ&lib=M0Bpbji8dWRn8NF0es_txw0Uap4zf7K2U';
+const SCRIPT_URL = 'https://script.google.com/macros/library/d/1Pyx4EQc88_WUV_JII95_Qhy91H-jevhgL0kC7LojV0A46G_wm61fNXmz/2;
 
 // Global Variables
 let quill;
@@ -354,3 +354,4 @@ function filterResults(status) {
         displayRequirements(filtered);
     }
 }
+
