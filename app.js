@@ -2,8 +2,8 @@
 // TECH TEAM REQUIREMENT FORM - MAIN SCRIPT
 // ============================================
 
-// CONFIGURATION - YOUR URL IS ALREADY HERE
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwhGs_GNiLey65fWtv8aHNu1AZ4CtzWnrI9RDyCV5UbyelJpIXFzggsXym8pEnZJPHq/exec;
+// CONFIGURATION - CORRECT EXEC URL
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwhGs_GNiLey65fWtv8aHNu1AZ4CtzWnrI9RDyCV5UbyelJpIXFzggsXym8pEnZJPHq/exec';
 
 // Global Variables
 let quill;
@@ -354,5 +354,3 @@ function filterResults(status) {
         displayRequirements(filtered);
     }
 }
-
-
