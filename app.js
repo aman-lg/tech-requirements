@@ -3,7 +3,7 @@
 // ============================================
 
 // CONFIGURATION - YOUR URL IS ALREADY HERE
-const SCRIPT_URL = 'https://script.google.com/macros/library/d/1Pyx4EQc88_WUV_JII95_Qhy91H-jevhgL0kC7LojV0A46G_wm61fNXmz/2;
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwhGs_GNiLey65fWtv8aHNu1AZ4CtzWnrI9RDyCV5UbyelJpIXFzggsXym8pEnZJPHq/exec;
 
 // Global Variables
 let quill;
@@ -354,4 +354,5 @@ function filterResults(status) {
         displayRequirements(filtered);
     }
 }
+
 
