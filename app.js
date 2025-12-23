@@ -2,7 +2,7 @@
 // TECH TEAM REQUIREMENT FORM - MAIN SCRIPT
 // ============================================
 
-// CONFIGURATION - YOUR WEB APP URL IS CONFIGURED!
+// CONFIGURATION - YOUR URL IS ALREADY HERE
 const SCRIPT_URL = 'https://script.googleusercontent.com/macros/echo?user_content_key=AehSKLhMKE6AXy4qM-PaLjfj9jXK-1c58hruHJR6QYFMERaSFVIrMi9JDAwwyfZYzlRD27OXt1FecZoO1JJkMADs0tS59SwL3QcvTOWDLCiOt93sA_PpHkQFbE26oJpsB0cMZBaTEuDoZ7zLp6IaF-wIVB20PaY-sb3dc3SxKwhv4_zhZwPdKA59tZU2Plfa4W2cYB5MzC_n9OYem2IZDlFxjo6BZN5BPJjciDfUzcpyL2fSF6QuxU_OgyPYASaJUWOiv-DrIuhySy84CXUKo3KWUJCgaRDLNQ&lib=M0Bpbji8dWRn8NF0es_txw0Uap4zf7K2U';
 
 // Global Variables
@@ -66,13 +66,11 @@ function displayFiles() {
         Array.from(fileInput.files).forEach((file, index) => {
             const fileSize = (file.size / 1024 / 1024).toFixed(2);
             
-            // Check file size
             if (file.size > 10 * 1024 * 1024) {
                 alert(`File "${file.name}" is too large. Maximum size is 10MB.`);
                 return;
             }
             
-            // Get file icon
             const ext = file.name.split('.').pop().toLowerCase();
             let icon = 'fa-file';
             let iconColor = '#6b7280';
@@ -138,12 +136,11 @@ function fileToBase64(file) {
 }
 
 // ============================================
-// FORM SUBMISSION
+// FORM SUBMISSION - FIXED FOR GOOGLE APPS SCRIPT
 // ============================================
 document.getElementById('requirementForm').addEventListener('submit', async function(e) {
     e.preventDefault();
     
-    // Validate description
     const editorContent = quill.root.innerHTML;
     const editorText = quill.getText().trim();
     
@@ -152,13 +149,11 @@ document.getElementById('requirementForm').addEventListener('submit', async func
         return;
     }
     
-    // Show loading
     document.getElementById('loadingOverlay').classList.add('show');
     document.getElementById('successMessage').classList.remove('show');
     document.getElementById('errorMessage').classList.remove('show');
     
     try {
-        // Collect form data
         const formData = {
             memberName: document.getElementById('memberName').value.trim(),
             memberEmail: document.getElementById('memberEmail').value.trim().toLowerCase(),
@@ -170,7 +165,6 @@ document.getElementById('requirementForm').addEventListener('submit', async func
             status: 'Pending'
         };
         
-        // Handle file uploads
         const fileInput = document.getElementById('fileUpload');
         const files = [];
         
@@ -187,12 +181,12 @@ document.getElementById('requirementForm').addEventListener('submit', async func
         
         formData.files = files;
         
-        // Submit to Google Apps Script
-        await fetch(SCRIPT_URL, {
+        // THIS IS THE FIX - Proper Google Apps Script request
+        const response = await fetch(SCRIPT_URL, {
+            redirect: 'follow',
             method: 'POST',
-            mode: 'no-cors',
             headers: {
-                'Content-Type': 'application/json',
+                'Content-Type': 'text/plain',
             },
             body: JSON.stringify({
                 action: 'submitRequirement',
@@ -200,16 +194,20 @@ document.getElementById('requirementForm').addEventListener('submit', async func
             })
         });
         
-        // Hide loading, show success
+        const result = await response.json();
+        console.log('Submit response:', result);
+        
+        if (!result.success) {
+            throw new Error(result.message || 'Submission failed');
+        }
+        
         document.getElementById('loadingOverlay').classList.remove('show');
         document.getElementById('successMessage').classList.add('show');
         
-        // Reset form
         document.getElementById('requirementForm').reset();
         document.getElementById('fileList').innerHTML = '';
         quill.setContents([]);
         
-        // Hide success after 5 seconds
         setTimeout(() => {
             document.getElementById('successMessage').classList.remove('show');
         }, 5000);
@@ -223,7 +221,7 @@ document.getElementById('requirementForm').addEventListener('submit', async func
 });
 
 // ============================================
-// SEARCH REQUIREMENTS
+// SEARCH REQUIREMENTS - FIXED
 // ============================================
 async function searchRequirements() {
     const email = document.getElementById('searchEmail').value.trim().toLowerCase();
@@ -233,43 +231,26 @@ async function searchRequirements() {
         return;
     }
     
-    // Validate email
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
         alert('Please enter a valid email address');
         return;
     }
     
-    // Show loading
     document.getElementById('searchLoading').classList.remove('hidden');
     document.getElementById('resultsContainer').classList.add('hidden');
     document.getElementById('noResults').classList.add('hidden');
     
     try {
-        // In production, this would fetch from Google Apps Script
-        // For now, using demo data
         const response = await fetch(`${SCRIPT_URL}?action=getRequirements&email=${encodeURIComponent(email)}`);
+        const result = await response.json();
         
-        // Demo data (remove when connecting to real backend)
-        allRequirements = [
-            {
-                id: '1',
-                timestamp: new Date().toISOString(),
-                memberName: 'Demo User',
-                memberEmail: email,
-                department: 'Tech - Development',
-                priority: 'High',
-                title: 'Sample Requirement',
-                description: '<p>This is a sample requirement to demonstrate the tracking feature.</p>',
-                status: 'Pending',
-                adminComments: '',
-                fileUrls: ''
-            }
-        ];
+        console.log('Search response:', result);
         
         document.getElementById('searchLoading').classList.add('hidden');
         
-        if (allRequirements.length > 0) {
+        if (result.success && result.data && result.data.length > 0) {
+            allRequirements = result.data;
             displayRequirements(allRequirements);
         } else {
             document.getElementById('noResults').classList.remove('hidden');
@@ -278,7 +259,7 @@ async function searchRequirements() {
     } catch (error) {
         console.error('Search error:', error);
         document.getElementById('searchLoading').classList.add('hidden');
-        document.getElementById('noResults').classList.remove('hidden');
+        alert('Error loading requirements. Please try again.');
     }
 }
 
@@ -300,12 +281,10 @@ function createRequirementCard(req) {
     card.className = 'requirement-card';
     card.setAttribute('data-status', req.status);
     
-    // Status badge
     let badgeClass = 'badge-pending';
     if (req.status === 'In Progress') badgeClass = 'badge-progress';
     if (req.status === 'Done') badgeClass = 'badge-done';
     
-    // Format date
     const date = new Date(req.timestamp);
     const formattedDate = date.toLocaleDateString('en-US', { 
         year: 'numeric', 
@@ -363,13 +342,11 @@ function createRequirementCard(req) {
 }
 
 function filterResults(status) {
-    // Update active button
     document.querySelectorAll('.filter-btn').forEach(btn => {
         btn.classList.remove('active');
     });
     event.target.classList.add('active');
     
-    // Filter requirements
     if (status === 'all') {
         displayRequirements(allRequirements);
     } else {
